@@ -11,7 +11,7 @@ A (node) module for running code with a controlled global context.
 
 ## Overview
 This module is intended to provide more deterministic controls to the native
-[`child_process`](https://nodejs.org/api/child_process.html) library.
+[`vm`](https://nodejs.org/api/vm.html) library.
 
 ### Features
 
