@@ -7,11 +7,12 @@ import { VM,
 
 
 function basic_tests () {
-    it("should run anonymous function in VM ", async function () {
+    it("should run anonymous function in VM", async function () {
 	let full_name;
 	const ctx			= {
 	    "name": "Robin Williams",
 	    setName ( value ) {
+		log.debug("VM called: setName( %s )", value );
 		full_name		= value;
 	    },
 	};
@@ -32,7 +33,7 @@ function basic_tests () {
 	expect( full_name		).to.equal( ctx.name );
     });
 
-    it("should run script in VM ", async function () {
+    it("should run script in VM", async function () {
 	let full_name;
 	const ctx			= {
 	    "name": "Robin Williams",
@@ -57,7 +58,7 @@ function basic_tests () {
 	expect( full_name		).to.equal( ctx.name );
     });
 
-    it("should run pre-compiled script in VM ", async function () {
+    it("should run pre-compiled script in VM", async function () {
 	let full_name;
 	const ctx			= {
 	    "name": "Robin Williams",
@@ -82,7 +83,7 @@ function basic_tests () {
 	expect( full_name		).to.equal( ctx.name );
     });
 
-    it("should remove a context variable if it set to undefined ", async function () {
+    it("should remove a context variable if it set to undefined", async function () {
 	const ctx			= {
 	    "name": "Robin Williams",
 	};
@@ -112,6 +113,17 @@ function basic_tests () {
 	    expect( ctx_vars		).to.have.length( 1 );
 	    expect( ctx_vars		).to.include("name");
 	}
+    });
+
+    it("should use IO support for function scripts", async function () {
+	const name			= "Robin Williams";
+
+	const vm			= new VM({});
+	const greeting			= vm.run( ( first_name, last_name ) => {
+	    return `Hello, ${first_name} ${last_name}`;
+	}, ...name.split(" ") );
+
+	expect( greeting		).to.equal("Hello, Robin Williams");
     });
 }
 

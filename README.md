@@ -42,6 +42,18 @@ vm.run( code );
 code.run( context );
 ```
 
+### IO Support
+When the `run` input is a function, input/output controls are supported.
+
+```js
+let vm = new VM({});
+let greeting = vm.run( ( first_name, last_name ) => {
+    return `Hello, ${first_name} ${last_name}`;
+}, "Robin", "Williams" );
+// Hello, Robin Williams
+```
+
+
 
 ### API Reference
 

@@ -29,21 +29,24 @@ export class VM {
 	return this._context;
     }
 
-    run ( script ) {
+    run ( script, ...input_args ) {
 	if ( !(script instanceof Script) )
 	    script			= new Script( script );
 
-	script.run( this._context );
-
-	return script;
+	return script.run( this, ...input_args );
     }
 }
 
 
 export class Script {
-    constructor ( code ) {
-	if ( typeof code === "function" )
-	    code			= `(${code.toString()})()`;
+    constructor ( code, default_ctx ) {
+	this.__is_function		= typeof code === "function";
+	this.__default_ctx		= default_ctx;
+
+	if ( this.isFunction() )
+	    code			= `__io__.output = (${code.toString()})( ...__io__.input )`;
+
+	this.__source			= code;
 
 	if ( code instanceof vm.Script )
 	    this._script		= code;
@@ -51,13 +54,33 @@ export class Script {
 	    this._script		= new vm.Script( code );
     }
 
+    isFunction () {
+	return this.__is_function;
+    }
+
     get script () {
 	return this._script;
     }
 
-    run ( ctx ) {
-	if ( !vm.isContext( ctx ) )
-	    vm.createContext( ctx );
-	this._script.runInContext( ctx );
+    run ( vm, ...input_args ) {
+	if ( !(vm instanceof VM) ) {
+	    vm				= new VM( this.__default_ctx );
+	    vm.context( ctx );
+	}
+
+	const __io__			= {
+	    "input": input_args,
+	    "output": null,
+	}
+
+	if ( this.isFunction() )
+	    vm.context({ __io__ });
+
+	this._script.runInContext( vm.context() );
+
+	if ( this.isFunction() )
+	    vm.context({ "__io__": undefined });
+
+	return __io__.output;
     }
 }
