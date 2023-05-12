@@ -136,21 +136,57 @@ function basic_tests () {
 	};
 	const vm			= new VM( ctx );
 
-	const funcs			= {
-	    named ( name ) {
-		setName( name );
-	    },
-	};
-	vm.run( funcs.named, "name1" );
+	{
+	    const funcs			= {
+		named ( name ) {
+		    setName( name );
 
-	expect( full_name		).to.equal( "name1" );
+		    // Ensure regex doesn't find this '=>'
+		    return () => {};
+		},
+	    };
+	    vm.run( funcs.named, "name1" );
 
-	function named ( name ) {
-	    setName( name );
+	    expect( full_name		).to.equal( "name1" );
 	}
-	vm.run( named, "name2" );
 
-	expect( full_name		).to.equal( "name2" );
+	{
+	    function named ( name ) {
+		setName( name );
+	    }
+	    vm.run( named, "name2" );
+
+	    expect( full_name		).to.equal( "name2" );
+	}
+
+	{
+	    const funcs			= {
+		"named": ( name ) => {
+		    setName( name );
+		},
+	    };
+	    vm.run( funcs.named, "name3" );
+
+	    expect( full_name		).to.equal( "name3" );
+	}
+
+	{
+	    const func			= (function ( name ) {
+		setName( name );
+	    });
+	    vm.run( func, "name4" );
+
+	    expect( full_name		).to.equal( "name4" );
+
+	    const funcs			= {
+		"named": function ( name ) {
+		    setName( name );
+		},
+	    };
+	    vm.run( funcs.named, "name5" );
+
+	    expect( full_name		).to.equal( "name5" );
+	}
     });
 }
 

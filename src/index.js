@@ -47,8 +47,16 @@ export class Script {
 	    // Handle named functions without 'function' prefix
 	    let fn_str			= code.toString().trim();
 
-	    if ( code.name !== "" && !fn_str.startsWith("function") )
-		fn_str			= `function ${fn_str}`;
+	    if ( code.named !== "" ) {
+		// It has a name, but the format could be:
+		//
+		//   1. "named () {"
+		//   2. "() => {"
+		//
+		// We only want to add the "function" prefix to #1
+		if ( !fn_str.startsWith("function") && !fn_str.startsWith("(") )
+		    fn_str		= `function ${fn_str}`;
+	    }
 
 	    code			= `__io__.output = (${fn_str})( ...__io__.input )`;
 	}
