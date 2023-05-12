@@ -1,6 +1,6 @@
 {
   "name": "@whi/isolated-execution",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A (node) module for running code with a controlled global context",
   "type": "module",
   "main": "src/index.js",
