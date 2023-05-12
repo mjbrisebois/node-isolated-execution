@@ -43,8 +43,15 @@ export class Script {
 	this.__is_function		= typeof code === "function";
 	this.__default_ctx		= default_ctx;
 
-	if ( this.isFunction() )
-	    code			= `__io__.output = (${code.toString()})( ...__io__.input )`;
+	if ( this.isFunction() ) {
+	    // Handle named functions without 'function' prefix
+	    let fn_str			= code.toString().trim();
+
+	    if ( code.name !== "" && !fn_str.startsWith("function") )
+		fn_str			= `function ${fn_str}`;
+
+	    code			= `__io__.output = (${fn_str})( ...__io__.input )`;
+	}
 
 	this.__source			= code;
 

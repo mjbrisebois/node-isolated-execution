@@ -125,6 +125,33 @@ function basic_tests () {
 
 	expect( greeting		).to.equal("Hello, Robin Williams");
     });
+
+    it("should run named function in VM", async function () {
+	let full_name;
+	const ctx			= {
+	    setName ( value ) {
+		log.debug("VM called: setName( %s )", value );
+		full_name		= value;
+	    },
+	};
+	const vm			= new VM( ctx );
+
+	const funcs			= {
+	    named ( name ) {
+		setName( name );
+	    },
+	};
+	vm.run( funcs.named, "name1" );
+
+	expect( full_name		).to.equal( "name1" );
+
+	function named ( name ) {
+	    setName( name );
+	}
+	vm.run( named, "name2" );
+
+	expect( full_name		).to.equal( "name2" );
+    });
 }
 
 function errors_tests () {
